@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reset your Loyfinity password</title>
+  <link rel="stylesheet" href="/site.css"><script src="/config.js"></script>
+</head>
+<body>
+  <main class="panel">
+    <div class="mark">∞</div>
+    <h1>Choose a new password</h1>
+    <p>Use at least 12 characters, including upper-case, lower-case and a number.</p>
+    <form id="form">
+      <input id="password" class="field" type="password" autocomplete="new-password" minlength="12" placeholder="New password" required>
+      <input id="confirm" class="field" type="password" autocomplete="new-password" minlength="12" placeholder="Confirm new password" required>
+      <button type="submit">Update password</button>
+    </form>
+    <div id="status" class="status" hidden></div>
+    <p class="small"><a href="/">Return to Loyfinity</a></p>
+  </main>
+  <script>
+    const form = document.getElementById('form');
+    const statusBox = document.getElementById('status');
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      statusBox.hidden = false;
+      statusBox.textContent = 'Updating password…';
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm').value;
+      try {
+        if (password !== confirm) throw new Error('The passwords do not match.');
+        if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password) || password.length < 12) throw new Error('Use at least 12 characters with upper-case, lower-case and a number.');
+        const token = new URLSearchParams(location.search).get('token');
+        const api = window.LOYFINITY_API;
+        if (!token || !api || api.includes('yourdomain.com')) throw new Error('This reset link is incomplete or the website has not been configured.');
+        const response = await fetch(api + '/auth/reset-password', {
+          method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({token, password})
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'This reset link is invalid or expired.');
+        statusBox.textContent = 'Your password has been updated. Return to the Loyfinity app and sign in again.';
+        form.reset();
+      } catch (error) {
+        statusBox.textContent = error.message || 'We could not update your password.';
+      }
+    });
+  </script>
+</body>
+</html>

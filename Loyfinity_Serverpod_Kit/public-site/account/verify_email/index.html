@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Verify your Loyfinity account</title>
+  <link rel="stylesheet" href="/site.css"><script src="/config.js"></script>
+</head>
+<body>
+  <main class="panel">
+    <div class="mark">∞</div>
+    <h1>Verify your email</h1>
+    <p id="status">Checking your verification link…</p>
+    <p class="small"><a href="/">Return to Loyfinity</a></p>
+  </main>
+  <script>
+    (async () => {
+      const status = document.getElementById('status');
+      try {
+        const token = new URLSearchParams(location.search).get('token');
+        const api = window.LOYFINITY_API;
+        if (!token || !api || api.includes('yourdomain.com')) throw new Error('This verification link is incomplete or the website has not been configured.');
+        const response = await fetch(api + '/auth/verify-email', {
+          method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({token})
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'This verification link has expired or was already used.');
+        status.textContent = 'Your email is verified. You can now sign in to Loyfinity.';
+      } catch (error) {
+        status.textContent = error.message || 'We could not verify this email address.';
+      }
+    })();
+  </script>
+</body>
+</html>

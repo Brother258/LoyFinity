@@ -1,0 +1,38 @@
+# Secrets and local environment
+.env
+.env.*.local
+serverpod_server/config/passwords.yaml
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+key.properties
+
+# Flutter / Dart
+.dart_tool/
+.packages
+.pub/
+**/.dart_tool/
+**/build/
+client/.flutter-plugins
+client/.flutter-plugins-dependencies
+client/android/.gradle/
+client/android/local.properties
+client/ios/Flutter/Generated.xcconfig
+client/ios/Flutter/flutter_export_environment.sh
+client/ios/Pods/
+client/ios/.symlinks/
+
+# Serverpod local state
+serverpod_server/.serverpod/
+serverpod_server/.dart_tool/
+serverpod_server/.packages
+serverpod_client/.dart_tool/
+serverpod_client/.packages
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp

@@ -1,0 +1,30 @@
+name: loyfinity_app
+description: Loyfinity customer and business loyalty platform.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.12.2 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  provider: ^6.1.5+1
+  dio: ^5.9.0
+  flutter_secure_storage: ^11.2.0
+  geolocator: ^14.1.2
+  mobile_scanner: ^7.5.0
+  qr_flutter: ^4.1.0
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/brand/loyfinity-app-icon.png

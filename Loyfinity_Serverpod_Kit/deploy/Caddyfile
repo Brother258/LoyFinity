@@ -1,0 +1,26 @@
+{$API_DOMAIN} {
+  encode zstd gzip
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    X-Content-Type-Options "nosniff"
+    Referrer-Policy "no-referrer"
+    X-Frame-Options "DENY"
+  }
+  reverse_proxy serverpod:8082 {
+    # Overwrite rather than trust a caller-supplied forwarding header. The
+    # Serverpod API uses this value only as an input to the auth rate-limit key.
+    header_up X-Forwarded-For {remote_host}
+  }
+}
+
+{$SITE_DOMAIN} {
+  encode zstd gzip
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    X-Content-Type-Options "nosniff"
+    Referrer-Policy "strict-origin-when-cross-origin"
+    X-Frame-Options "DENY"
+  }
+  root * /srv/site
+  file_server
+}

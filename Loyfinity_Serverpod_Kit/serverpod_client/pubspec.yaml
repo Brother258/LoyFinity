@@ -1,0 +1,9 @@
+name: loyfinity_client
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: '>=3.12.2 <4.0.0'
+
+dependencies:
+  serverpod_client: 4.1.0

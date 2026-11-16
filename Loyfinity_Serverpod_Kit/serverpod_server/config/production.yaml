@@ -1,0 +1,34 @@
+apiServer:
+  port: 8080
+  publicHost: api.yourdomain.com
+  publicPort: 443
+  publicScheme: https
+
+insightsServer:
+  port: 8081
+  publicHost: api.yourdomain.com
+  publicPort: 443
+  publicScheme: https
+
+webServer:
+  port: 8082
+  publicHost: api.yourdomain.com
+  publicPort: 443
+  publicScheme: https
+
+database:
+  host: db
+  port: 5432
+  name: loyfinity
+  user: loyfinity
+  maxConnectionCount: 20
+
+redis:
+  enabled: false
+
+maxRequestSize: 32768
+
+sessionLogs:
+  persistentEnabled: true
+  consoleEnabled: true
+  consoleLogFormat: json

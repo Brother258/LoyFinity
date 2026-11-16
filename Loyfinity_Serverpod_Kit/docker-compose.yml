@@ -1,0 +1,70 @@
+services:
+  db:
+    image: postgis/postgis:16-3.5
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: loyfinity
+      POSTGRES_USER: loyfinity
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      TZ: Asia/Dhaka
+    command: ["postgres", "-c", "timezone=Asia/Dhaka"]
+    volumes:
+      - loyfinity_db:/var/lib/postgresql/data
+      - ./serverpod_server/db/001_loyfinity_schema.sql:/docker-entrypoint-initdb.d/001_loyfinity_schema.sql:ro
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U loyfinity -d loyfinity"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [internal]
+
+  serverpod:
+    build:
+      context: .
+      dockerfile: serverpod_server/Dockerfile
+    restart: unless-stopped
+    environment:
+      APP_ENV: production
+      SERVERPOD_DATABASE_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      SERVERPOD_SERVICE_SECRET: ${SERVERPOD_SERVICE_SECRET:?Set SERVERPOD_SERVICE_SECRET in .env}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?Set JWT_ACCESS_SECRET in .env}
+      REFRESH_TOKEN_DAYS: 30
+      APP_BASE_URL: https://${SITE_DOMAIN:?Set SITE_DOMAIN in .env}
+      RESEND_API_KEY: ${RESEND_API_KEY:?Set RESEND_API_KEY in .env}
+      EMAIL_FROM: ${EMAIL_FROM:?Set EMAIL_FROM in .env}
+      TZ: Asia/Dhaka
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8082"
+    networks: [internal]
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      API_DOMAIN: ${API_DOMAIN:?Set API_DOMAIN in .env}
+      SITE_DOMAIN: ${SITE_DOMAIN:?Set SITE_DOMAIN in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./public-site:/srv/site:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [serverpod]
+    networks: [internal]
+
+volumes:
+  loyfinity_db:
+  caddy_data:
+  caddy_config:
+
+networks:
+  internal:
+    driver: bridge
